@@ -28,7 +28,7 @@
 </ul>
 </li>
 
-<li>Make cVar "csstats_rank" and "csstats_rankbots" constant after ServerActivate (Map Change) / Init
+<li>Made cVar "csstats_rank" and "csstats_rankbots" constant after ServerActivate (Map Change) / Init
 <ul>
 <li>Any change to the value of "csstats_rank" should be accounted for only
 at ServerActivate/Init. This will ensure that the field "unique" of players
