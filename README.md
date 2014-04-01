@@ -1,13 +1,5 @@
-======================
-CSX_AMXX_UPDATING
-======================
-
-Update for AmxModX CSX Module for Counter-Strike 1.6 and Condition Zero
-
------------------------------
-Modifications:
------------------------------ 
-
+[B]Modifications:[/B]
+[LIST]
 1. Added: following Natives:
 
 get_user_rank
@@ -64,13 +56,9 @@ set_stats
 set_stats2
 reset_stats
 remove_stats
+[/LIST]
 
-
-
------------------------------
 Natives Details:
------------------------------
-
 
 /*  
 *  Returns the Rank of Player. --> index = id.  
