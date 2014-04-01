@@ -1,5 +1,4 @@
 
-
 #include "amxxmodule.h"
 #include "rank.h"
 
@@ -709,7 +708,6 @@ AMX_NATIVE_INFO stats_Natives[] = {
 	{ "set_user_stats2",	set_user_stats2 },
 	{ "set_user_score",		set_user_score },
 	{ "reset_user_stats",	reset_user_stats },
-	{ "reset_stats",		reset_stats },
 	{ "reset_stats",		reset_stats },
 	{ "push_stats",			push_stats },
 	{ "remove_stats",		remove_stats },
