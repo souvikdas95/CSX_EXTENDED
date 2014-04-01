@@ -6,7 +6,7 @@ Update for AmxModX CSX Module for Counter-Strike 1.6 and Condition Zero
 
 -----------------------------
 Modifications:
------------------------------
+----------------------------- 
 
 1. Added: following Natives:
 
