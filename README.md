@@ -45,8 +45,8 @@ which will check for existance of identity.</li>
 
 <li>Made Saving Rank more Precise
 <ul>
-<li>Added: Check for mannual exploit of ResetHUD ( Check for "fullupdate" command ). 
-This will also ensure Player Round <li>Stats don't get cleared away before Next Respawn</li>
+<li>Added: Check for mannual exploit of ResetHUD ( Check for "fullupdate" command ).<br>
+This will also ensure Player Round Stats don't get cleared away before Next Respawn</li>
 <li>Added: Delay for per player Rank Update</li>
 </ul>
 </li>
