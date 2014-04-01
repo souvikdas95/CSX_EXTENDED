@@ -2,6 +2,7 @@
 
 <ol>
 <li>Added: following Natives:
+<br>
 <ul>
 <li>get_user_rank</li>
 <li>get_user_score</li>
@@ -19,16 +20,18 @@
 <li>force_save_stats</li>
 </ul>
 </li>
-
+<br><br>
 <li>Changes in cVar "csstats_maxsize"
+<br>
 <ul>
 <li>Changed: default value changed from 3500 to 9000</li>
 <li>Removed: Maximum Value Cap ( clamp removed with 0 min and 3500 max )</li>
 <li>Added: support for no maxsize ( value = -1 )</li>
 </ul>
 </li>
-
+<br><br>
 <li>Made cVar "csstats_rank" and "csstats_rankbots" constant after ServerActivate (Map Change) / Init
+<br>
 <ul>
 <li>Any change to the value of "csstats_rank" should be accounted for only
 at ServerActivate/Init. This will ensure that the field "unique" of players
@@ -42,22 +45,24 @@ the check for "CPlayer::ignoreBots" during rank update ( ResetHUD ), with "CPlay
 which will check for existance of identity.</li>
 </ul>
 </li>
-
+<br><br>
 <li>Made Saving Rank more Precise
+<br>
 <ul>
 <li>Added: Check for mannual exploit of ResetHUD ( Check for "fullupdate" command ).<br>
 This will also ensure Player Round Stats don't get cleared away before Next Respawn</li>
 <li>Added: Delay for per player Rank Update</li>
 </ul>
 </li>
-
+<br><br>
 <li>Fixed: get_stats() and get_stats2() did not recognise the position of the last rank.</li>
-
+<br><br>
 <li>Fixed: new players were assigned last rank by default regardless of death toll of other players.</li>
-
+<br><br>
 <li>Fixed: Last Death declaring Round_End logEvent wasn't counted.</li>
-
+<br><br>
 <li>Replaced: Sequential Search with Binary Search in some of the Natives for faster Processing ( by Shooting King ).<br> Affected Natives:
+<br>
 <ul>
 <li>get_stats</li>
 <li>get_stats2</li>
@@ -68,22 +73,22 @@ This will also ensure Player Round Stats don't get cleared away before Next Resp
 </ul>
 </li>
 </ol>
-
+<br><br><br>
 <b><h2>New Natives:</h2></b>
-
+<br><br>
 //  <br>
 //  Returns the Rank of Player. --> index = id.<br>
 //  Returns 0 if no Rank exists.<br> 
 //  <br>
 <b>native get_user_rank(index);</b><br> 
-
+<br><br>
 //  <br>
 //  Gets current session score of player --> index = id<br> 
 //  Returns 0 if player is not valid/out of range<br> 
 //  Returns 1<br> 
 //  <br>
 <b>native get_user_score(index,&frags,&deaths);</b><br> 
-
+<br><br>
 //  <br>
 //  Sets overall stats of Player with given parameters. --> index = id.<br>
 //  Returns 0 if player is not valid/out of range<br>
@@ -94,7 +99,7 @@ This will also ensure Player Round Stats don't get cleared away before Next Resp
 //  <br>
 <b>native set_user_stats(index,stats[8],bodyhits[8]);</b><br> 
 <b>native set_user_stats2(index,stats2[4]);</b><br>
-
+<br><br>
 //  <br>
 //  Sets overall stats with given parameters. --> index = position. <br> 
 //  Returns new Rank <br>
@@ -104,7 +109,7 @@ This will also ensure Player Round Stats don't get cleared away before Next Resp
 //  <br>
 <b>native set_stats(index,stats[8],bodyhits[8]);</b><br> 
 <b>native set_stats2(index,stats2[4]);</b><br>
-
+<br><br>
 //  <br>
 //  Sets current session score of player --> index = id <br>
 //  Returns 0 if player is not valid/out of range <br>
@@ -114,7 +119,7 @@ This will also ensure Player Round Stats don't get cleared away before Next Resp
 //  you can set its value as -1 <br>
 //  <br>
 <b>native set_user_score(index,frags,deaths);</b><br>
-
+<br><br>
 //  <br>
 //  Resets overall stats to null --> index = id. <br>
 //  Returns 0 if player is not valid/out of range <br>
@@ -124,7 +129,7 @@ This will also ensure Player Round Stats don't get cleared away before Next Resp
 //  It simply nulls the entire Stats structure of index. <br>
 //  <br>
 <b>native reset_user_stats(index);</b><br>
-
+<br><br>
 //  <br>
 //  Resets overall stats to null --> index = position. <br>
 //  Returns new Rank <br>
@@ -133,7 +138,7 @@ This will also ensure Player Round Stats don't get cleared away before Next Resp
 //  It simply nulls the entire Stats structure of index. <br>
 //  <br>
 <b>native reset_stats(index);</b><br>
-
+<br><br>
 //  <br>
 //  Adds/Pushes overall stats with given parameters. <br>
 //  Returns 0 if Stats Entry already exists or can't be created <br>
@@ -151,7 +156,7 @@ This will also ensure Player Round Stats don't get cleared away before Next Resp
 //  WARNING : Use this function with Caution. <br>
 //  <br>
 <b>native push_stats(const unique[],const name[],stats[8],bodyhits[8],isip=0);</b><br>
-
+<br><br>
 //  <br>
 //  Removes and Deletes the Stats Entry. --> index = position.  <br>
 //  Returns -1 if position is not found. <br>
@@ -159,7 +164,7 @@ This will also ensure Player Round Stats don't get cleared away before Next Resp
 //  Returns 1 if successfully removed. <br>
 //  <br>
 <b>native remove_stats(index);</b><br>
-
+<br><br>
 //  <br>
 //  Reloads all the stats from the file and  <br>
 //  refresh rankstats of all the connected  <br>
@@ -178,7 +183,7 @@ This will also ensure Player Round Stats don't get cleared away before Next Resp
 //  default stats file path : amxmodx/data/csstats.dat <br>
 //  <br>
 <b>native force_load_stats();</b><br>
-
+<br><br>
 //  <br>
 //  Manually saves all the stats till previous round <br>
 //  before Restart of Map/Server. <br>
