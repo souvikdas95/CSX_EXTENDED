@@ -83,7 +83,6 @@ RankSystem::RankSystem()
 		if (HANDLE_MUTEX == FALSE)
 		{
 			MF_Log("RankSystem: Couldn't create critical section");
-			print_srvconsole("[%s] RankSystem: Couldn't create critical section\n", MODULE_LOGTAG);
 		}
 	}
 }
@@ -193,10 +192,12 @@ DWORD RankSystem::updatePos_thread(LPVOID lpParam)
 	if (arg == NULL || arg->parent == NULL) // Verify Pointer to RankStats
 	{
 		MF_Log("updatePos_thread: Invalid pointer parameter to RankStats");
-		print_srvconsole("[%s] updatePos_thread: Invalid pointer parameter to RankStats\n", MODULE_LOGTAG);
 		return 0;
 	}
 	arg->parent->updatePos_exec(arg);
+#ifdef DEBUG
+	MF_Log("updatePos_thread: Exiting Thread #%d", GetCurrentThreadId());
+#endif
 	return 0;
 }
 
@@ -217,10 +218,12 @@ void RankSystem::updatePos_init(RankStats* rr, Stats* s, bool sync)
 		if (h_temp == NULL)
 		{
 			MF_Log("updatePos_init: Couldn't create thread for updating Ranks");
-			print_srvconsole("[%s] updatePos_init: Couldn't create thread for updating Ranks\n", MODULE_LOGTAG);
 		}
 		else
 		{
+#ifdef DEBUG
+			MF_Log("updatePos_init: Creating Thread #%d", GetThreadId(h_temp));
+#endif
 			SetThreadPriority(h_temp, THREAD_PRIORITY_BELOW_NORMAL);
 			ResumeThread(h_temp);
 			CloseHandle(h_temp);
@@ -237,7 +240,6 @@ void RankSystem::updatePos_exec(RankStats* rr)
 	if(rr == NULL)
 	{
 		MF_Log("updatePos_exec: Pointer to RankStats has Expired!");
-		print_srvconsole("[%s] updatePos_exec: Pointer to RankStats has Expired!\n", MODULE_LOGTAG);
 
 		// Leave Critical Section
 		LeaveCriticalSection(MUTEX);
@@ -266,8 +268,7 @@ void RankSystem::updatePos_exec(RankStats* rr)
 	MF_AmxPush(&calc.amx, calc.amxAddr1);
 	if ((i = (uint8_t)MF_AmxExec(&calc.amx, &result, calc.func)) != AMX_ERR_NONE)
 	{
-		MF_LogError(&calc.amx, AMX_ERR_NATIVE, "findEntryInRank: Error in function \"get_score\"");
-		print_srvconsole("[%s] findEntryInRank: Error in function \"get_score\"\n", MODULE_LOGTAG);
+		MF_Log("updatePos_exec: Error in function \"get_score\"");
 
 		// Leave Critical Section
 		LeaveCriticalSection(MUTEX);
@@ -325,10 +326,12 @@ DWORD RankSystem::saveRank_thread(LPVOID lpParam)
 	if(arg == NULL)
 	{
 		MF_Log("saveRank_thread: Invalid pointer parameter to RankSystem");
-		print_srvconsole("[%s] saveRank_thread: Invalid pointer parameter to RankSystem\n", MODULE_LOGTAG);
 		return 0;
 	}
 	arg->saveRank_exec();
+#ifdef DEBUG
+	MF_Log("saveRank_thread: Exiting Thread #%d", GetCurrentThreadId());
+#endif
 	return 0;
 }
 
@@ -343,10 +346,12 @@ void RankSystem::saveRank_init()
 	if (h_saveRank == NULL)
 	{
 		MF_Log("saveRank_init: Couldn't create thread for saving Ranks");
-		print_srvconsole("[%s] saveRank_init: Couldn't create thread for saving Ranks\n", MODULE_LOGTAG);
 	}
 	else
 	{
+#ifdef DEBUG
+		MF_Log("saveRank_init: Creating Thread #%d", GetThreadId(h_saveRank));
+#endif
 		SetThreadPriority(h_saveRank, THREAD_PRIORITY_BELOW_NORMAL);
 		ResumeThread(h_saveRank);
 	}
@@ -363,7 +368,6 @@ void RankSystem::saveRank_exec()
 	if (bfp == NULL)
 	{
 		MF_Log("saveRank: Could not load csstats file: \"%s\"", filename);
-		print_srvconsole("[%s] saveRank: Could not load csstats file: \"%s\"\n", MODULE_LOGTAG, filename);
 
 		// Leave Critical Section
 		LeaveCriticalSection(MUTEX);
@@ -418,7 +422,6 @@ void RankSystem::loadRank()
 	if (bfp == NULL)
 	{
 		MF_Log("loadRank: Could not load csstats file: \"%s\"", filename);
-		print_srvconsole("[%s] loadRank: Could not load csstats file: \"%s\"\n", MODULE_LOGTAG, filename);
 		return;
 	}
 
@@ -427,7 +430,6 @@ void RankSystem::loadRank()
 	if (fread(buffer, sizeof(int16_t), 1, bfp) != 1 || *buffer != RANK_VERSION)
 	{
 		MF_Log("loadRank: Invalid RANK_VERSION Found!");
-		print_srvconsole("[%s] loadRank: Invalid RANK_VERSION Found!\n", MODULE_LOGTAG);
 		fclose(bfp);
 		return;
 	}
@@ -476,7 +478,6 @@ void RankSystem::loadRank()
 			else
 			{
 				MF_Log("loadRank: Unable to load any more Stats on Server");
-				print_srvconsole("[%s] loadRank: Unable to load any more Stats on Server\n", MODULE_LOGTAG);
 				fclose(bfp);
 				return;
 			}
@@ -520,8 +521,6 @@ RankSystem::RankStats* RankSystem::newEntryInRank(const char* unique, const char
 	if (a == NULL)
 	{
 		MF_Log("newEntryInRank: Could not allocate new \"RankStats\" entry");
-		print_srvconsole("[%s] newEntryInRank: Could not allocate new \"RankStats\" entry\n", MODULE_LOGTAG);
-
 		// Leave Critical Section
 		LeaveCriticalSection(MUTEX);
 
@@ -582,7 +581,6 @@ bool RankSystem::loadCalc(const char* filename)
 		|| (MF_AmxFindPublic(&calc.amx, "get_score", &calc.func) != AMX_ERR_NONE))
 	{
 		MF_LogError(&calc.amx, AMX_ERR_NATIVE, "loadCalc: Couldn't load function \"get_score\" from \"%s\"", filename);
-		print_srvconsole("[%s] loadCalc: Couldn't load function \"get_score\" from \"%s\"\n", MODULE_LOGTAG, filename);
 		MF_UnloadAmxScript(&calc.amx, &calc.code);
 		return false;
 	}

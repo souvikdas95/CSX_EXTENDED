@@ -92,7 +92,7 @@ struct sUserMsg
 	{0,				0,					0,					false}	\
 };
 
-void print_srvconsole(const char *fmt, ...)
+/*void print_srvconsole(const char *fmt, ...)
 {
 	va_list argptr;
 	static char string[384];
@@ -102,7 +102,7 @@ void print_srvconsole(const char *fmt, ...)
 	va_end(argptr);
 
 	SERVER_PRINT(string);
-}
+}*/
 
 const bool IsValidAuth(const char* authid)
 {
@@ -174,7 +174,10 @@ void ServerActivate_Post(edict_t *pEdictList,int edictCount,int clientMax)
 	static bool isActivated = false;
 	if (!isActivated)
 	{
-		MakeHookSpawn();
+#ifdef DEBUG
+		MF_Log("ServerActivate_Post: Calling 'MakeHookSpawn_Player'");
+#endif
+		MakeHookSpawn_Player();
 		isActivated = true;
 	}
 
@@ -467,6 +470,20 @@ void TraceLine_Post(const float *v1, const float *v2, int fNoMonsters, edict_t *
 	RETURN_META(MRES_IGNORED);
 }
 
+void SetClientKeyValue(int clientIndex, char *infobuffer, char const *key, char const *value)
+{
+	if (!strcmp(key, "*bot") && !strcmp(value, "1"))
+	{
+		g_pengfuncsTable->pfnSetClientKeyValue = NULL;
+#ifdef DEBUG
+		MF_Log("SetClientKeyValue: Calling 'MakeHookSpawn_CSBot'");
+#endif
+		MakeHookSpawn_CSBot(GETEDICT(clientIndex));
+	}
+
+	RETURN_META(MRES_IGNORED);
+}
+
 void OnMetaAttach()
 {
 	CVAR_REGISTER(&init_csstats_maxsize);
@@ -517,4 +534,6 @@ void OnPluginsLoaded()
 	iFBDefusing = MF_RegisterForward("bomb_defusing",ET_IGNORE,FP_CELL,FP_DONE);
 	iFBExplode = MF_RegisterForward("bomb_explode",ET_IGNORE,FP_CELL,FP_CELL,FP_DONE);
 	iFGrenade = MF_RegisterForward("grenade_throw",ET_IGNORE,FP_CELL,FP_CELL,FP_CELL,FP_DONE);
+
+	g_pengfuncsTable->pfnSetClientKeyValue = SetClientKeyValue;
 }

@@ -131,6 +131,10 @@ void CPlayer::PutInServer()
 			else
 				unique = ip;
 		} break;
+		default:
+		{
+			unique = name;
+		}
 	}
 
 	// Allocate Player Stats
@@ -143,7 +147,6 @@ void CPlayer::PutInServer()
 		else
 		{
 			MF_Log("PutInServer: Unable to load Stats of player \"%s\" on Server", name);
-			print_srvconsole("[%s] PutInServer: Unable to load Stats of player \"%s\" on Server\n", MODULE_LOGTAG, name);
 		}
 	}
 	else if (unique != name && strcmp(rank->getName(), name) != 0)

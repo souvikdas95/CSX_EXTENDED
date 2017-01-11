@@ -109,7 +109,7 @@ typedef unsigned char      uint8_t;
 #define BOMB_DEFUSING	4
 #define BOMB_DEFUSED	5
 
-extern void print_srvconsole(const char *fmt, ...);
+// extern void print_srvconsole(const char *fmt, ...);
 
 struct weaponsVault
 {
@@ -199,8 +199,11 @@ extern inline const bool ignoreBots();
 
 extern inline const bool isModuleActive();
 
-extern void MakeHookSpawn(void);
-extern void HookSpawn_Post(int);
+extern void MakeHookSpawn_Player(void);
+extern void MakeHookSpawn_CSBot(edict_t *pEdict);
+
+extern enginefuncs_t *g_pengfuncsTable;
+
 #endif // RANK_H
 
 

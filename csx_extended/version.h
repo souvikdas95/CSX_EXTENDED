@@ -5,7 +5,7 @@
  
 #define VERSION_MAJOR               2
 #define VERSION_MINOR               0
-#define VERSION_REVISION            1
+#define VERSION_REVISION            2
 #define VERSION_BUILD               0
  
 #define VER_FILE_DESCRIPTION_STR    MODULE_NAME
@@ -20,7 +20,7 @@
 #define VER_PRODUCT_VERSION_STR     VER_FILE_VERSION_STR
 #define VER_ORIGINAL_FILENAME_STR   "csx_extended_amxx.dll"
 #define VER_INTERNAL_NAME_STR       VER_ORIGINAL_FILENAME_STR
-#define VER_COPYRIGHT_STR           "Copyright (C) Souvik Das 2016"
+#define VER_COPYRIGHT_STR           "Copyright (C) Souvik Das 2017"
  
 #ifdef _DEBUG
   #define VER_VER_DEBUG             VS_FF_DEBUG

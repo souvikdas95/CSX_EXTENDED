@@ -78,7 +78,6 @@ static cell AMX_NATIVE_CALL get_user_wrstats(AMX *amx, cell *params) /* 4 param 
 	if (weapon >= MAX_WEAPONS + MAX_CWEAPONS)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "get_user_wrstats: Invalid Weapon ID : %d", weapon);
-		print_srvconsole("[%s] get_user_wrstats: Invalid Weapon ID : %d\n", MODULE_LOGTAG, weapon);
 		return 0;
 	}
 	CPlayer* pPlayer = GET_PLAYER_POINTER_I(index);
@@ -109,7 +108,6 @@ static cell AMX_NATIVE_CALL get_user_wstats(AMX *amx, cell *params) /* 4 param *
 	if (weapon < 0 || weapon >= MAX_WEAPONS + MAX_CWEAPONS)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "get_user_wstats: Invalid Weapon ID : %d", weapon);
-		print_srvconsole("[%s] get_user_wstats: Invalid Weapon ID : %d\n", MODULE_LOGTAG, weapon);
 		return 0;
 	}
 	CPlayer* pPlayer = GET_PLAYER_POINTER_I(index);
@@ -275,7 +273,6 @@ static cell AMX_NATIVE_CALL register_cwpn(AMX *amx, cell *params)	// name, melee
 		}
 	}
 	MF_Log("register_cwpn: No More Custom Weapon Slots!");
-	print_srvconsole("[%s] register_cwpn: No More Custom Weapon Slots!\n", MODULE_LOGTAG);
 	return 0;
 }
 
@@ -288,7 +285,6 @@ static cell AMX_NATIVE_CALL custom_wpn_dmg(AMX *amx, cell *params)	// wid, att, 
 	|| !weaponData[weapon].used)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "custom_wpn_dmg: Invalid Weapon ID : %d", weapon);
-		print_srvconsole("[%s] custom_wpn_dmg: Invalid Weapon ID : %d\n", MODULE_LOGTAG, weapon);
 		return 0;
 	}
 	uint8_t att = params[2];
@@ -299,14 +295,12 @@ static cell AMX_NATIVE_CALL custom_wpn_dmg(AMX *amx, cell *params)	// wid, att, 
 	if (dmg < 1)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "custom_wpn_dmg: Invalid Damage : %d", dmg);
-		print_srvconsole("[%s] custom_wpn_dmg: Invalid Damage : %d\n", MODULE_LOGTAG, dmg);
 		return 0;
 	}
 	uint8_t aim = params[5];
 	if (aim > 7)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "custom_wpn_dmg: Invalid Aim : %d", aim);
-		print_srvconsole("[%s] custom_wpn_dmg: Invalid Aim : %d\n", MODULE_LOGTAG, aim);
 		return 0;
 	}
 	CPlayer* pAtt = GET_PLAYER_POINTER_I(att);
@@ -347,7 +341,6 @@ static cell AMX_NATIVE_CALL custom_wpn_shot(AMX *amx, cell *params)	// player, w
 	|| !weaponData[weapon].used)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "custom_wpn_shot: Invalid Weapon ID : %d", weapon);
-		print_srvconsole("[%s] custom_wpn_shot: Invalid Weapon ID : %d\n", MODULE_LOGTAG, weapon);
 		return 0;
 	}
 	CPlayer* pPlayer = GET_PLAYER_POINTER_I(index);
@@ -361,7 +354,6 @@ static cell AMX_NATIVE_CALL get_wpnname(AMX *amx, cell *params)
 	if (!id || id >= MAX_WEAPONS + MAX_CWEAPONS)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "get_wpnname: Invalid Weapon ID : %d", id);
-		print_srvconsole("[%s] get_wpnname: Invalid Weapon ID : %d\n", MODULE_LOGTAG, id);
 		return 0;
 	}
 	return MF_SetAmxString(amx, params[2], weaponData[id].name, params[3]);
@@ -373,7 +365,6 @@ static cell AMX_NATIVE_CALL get_wpnlogname(AMX *amx, cell *params)
 	if (!id || id >= MAX_WEAPONS + MAX_CWEAPONS)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "get_wpnlogname: Invalid Weapon ID : %d", id);
-		print_srvconsole("[%s] get_wpnlogname: Invalid Weapon ID : %d\n", MODULE_LOGTAG, id);
 		return 0;
 	}
 	return MF_SetAmxString(amx, params[2], weaponData[id].logname, params[3]);
@@ -385,7 +376,6 @@ static cell AMX_NATIVE_CALL is_melee(AMX *amx, cell *params)
 	if (!id || id >= MAX_WEAPONS + MAX_CWEAPONS)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "is_melee: Invalid Weapon ID : %d", id);
-		print_srvconsole("[%s] is_melee: Invalid Weapon ID : %d\n", MODULE_LOGTAG, id);
 		return 0;
 	}
 	if (id == 29)	// knife
@@ -684,14 +674,12 @@ static cell AMX_NATIVE_CALL push_stats(AMX *amx, cell *params) /*5 param */
 	if (temp != NULL)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "push_stats: Stats already exists");
-		print_srvconsole("[%s] push_stats: Stats already exists\n", MODULE_LOGTAG);
 		return 0;
 	}
 	temp = g_rank.newEntryInRank(Unique, MF_GetAmxString(amx, params[2], 0, &iLen));
 	if (temp == NULL)
 	{
 		MF_LogError(amx, AMX_ERR_NATIVE, "push_stats: Failed!");
-		print_srvconsole("[%s] push_stats: Failed!\n", MODULE_LOGTAG);
 		return 0;
 	}
 	cell* cpStats = MF_GetAmxAddr(amx, params[3]);
@@ -729,7 +717,6 @@ static cell AMX_NATIVE_CALL remove_stats(AMX *amx, cell *params) /* 1 param */
 			{
 				// To prevent any possible crash during rank update at Round End.
 				MF_LogError(amx, AMX_ERR_NATIVE, "remove_stats: Can't Remove a Connected Player's Stats");
-				print_srvconsole("[%s] remove_stats: Can't Remove a Connected Player's Stats\n", MODULE_LOGTAG);
 				return 0;
 			}
 		}

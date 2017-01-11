@@ -16,7 +16,7 @@
 
 // Module info
 #define MODULE_NAME "CSX Extended"
-#define MODULE_VERSION "2.0.1.0"
+#define MODULE_VERSION "2.0.2.0"
 #define MODULE_AUTHOR "Souvik Das"
 #define MODULE_URL "forums.alliedmods.net/showthread.php?t=236021"
 #define MODULE_LOGTAG "CSX"
