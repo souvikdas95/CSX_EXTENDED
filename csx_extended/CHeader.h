@@ -55,17 +55,17 @@ typedef unsigned char      uint8_t;
 
 #define CHECK_ENTITY(x) \
 	if (x < 0 || x > gpGlobals->maxEntities) { \
-		MF_LogError(amx, AMX_ERR_NATIVE, "Entity out of range (%d)", x); \
+		MF_SyncLogError(amx, AMX_ERR_NATIVE, "Entity out of range (%d)", x); \
 		return 0; \
 	} else { \
 		if (x <= gpGlobals->maxClients) { \
 			if (!MF_IsPlayerIngame(x)) { \
-				MF_LogError(amx, AMX_ERR_NATIVE, "Invalid player %d (not in-game)", x); \
+				MF_SyncLogError(amx, AMX_ERR_NATIVE, "Invalid player %d (not in-game)", x); \
 				return 0; \
 			} \
 		} else { \
 			if (x != 0 && FNullEnt(INDEXENT(x))) { \
-				MF_LogError(amx, AMX_ERR_NATIVE, "Invalid entity %d", x); \
+				MF_SyncLogError(amx, AMX_ERR_NATIVE, "Invalid entity %d", x); \
 				return 0; \
 			} \
 		} \
@@ -73,11 +73,11 @@ typedef unsigned char      uint8_t;
 
 #define CHECK_PLAYER(x) \
 	if (x < 1 || x > gpGlobals->maxClients) { \
-		MF_LogError(amx, AMX_ERR_NATIVE, "Player out of range (%d)", x); \
+		MF_SyncLogError(amx, AMX_ERR_NATIVE, "Player out of range (%d)", x); \
 		return 0; \
 	} else { \
 		if (!MF_IsPlayerIngame(x) || FNullEnt(MF_GetPlayerEdict(x))) { \
-			MF_LogError(amx, AMX_ERR_NATIVE, "Invalid player %d", x); \
+			MF_SyncLogError(amx, AMX_ERR_NATIVE, "Invalid player %d", x); \
 			return 0; \
 		} \
 	}
@@ -85,17 +85,17 @@ typedef unsigned char      uint8_t;
 #define CHECK_PLAYERRANGE(x) \
 	if (x > gpGlobals->maxClients || x < 0) \
 	{ \
-		MF_LogError(amx, AMX_ERR_NATIVE, "Player out of range (%d)", x); \
+		MF_SyncLogError(amx, AMX_ERR_NATIVE, "Player out of range (%d)", x); \
 		return 0; \
 	}
 
 #define CHECK_NONPLAYER(x) \
 	if (x < 1 || x <= gpGlobals->maxClients || x > gpGlobals->maxEntities) { \
-		MF_LogError(amx, AMX_ERR_NATIVE, "Non-player entity %d out of range", x); \
+		MF_SyncLogError(amx, AMX_ERR_NATIVE, "Non-player entity %d out of range", x); \
 		return 0; \
 	} else { \
 		if (FNullEnt(INDEXENT(x))) { \
-			MF_LogError(amx, AMX_ERR_NATIVE, "Invalid non-player entity %d", x); \
+			MF_SyncLogError(amx, AMX_ERR_NATIVE, "Invalid non-player entity %d", x); \
 			return 0; \
 		} \
 	}
@@ -113,11 +113,11 @@ typedef unsigned char      uint8_t;
 
 struct weaponsVault
 {
-  char name[32];
-  char logname[16];
-  uint8_t ammoSlot;
-  bool used;
-  bool melee;
+	char name[32];
+	char logname[16];
+	uint8_t ammoSlot;
+	bool used;
+	bool melee;
 };
 
 typedef void(*funEventCall)(void*);
@@ -159,8 +159,6 @@ extern cvar_t* csstats_pause;
 extern cvar_t* csstats_maxsize;
 extern cvar_t* csstats_rank;
 extern cvar_t* csstats_reset;
-extern bool cvar_rankbots;
-extern uint8_t cvar_rank;
 
 extern int gmsgCurWeapon;
 extern int gmsgDamageEnd;
@@ -188,14 +186,14 @@ extern void Client_DeathMsg(void*);
 
 extern const bool IsValidAuth(const char*);
 
-const char* get_localinfo(const char* name, const char* def = NULL);
+const char* get_localinfo(const char* name, const char* def = nullptr);
 
 extern weaponsVault weaponData[MAX_WEAPONS + MAX_CWEAPONS];
 
 extern inline const bool IsBot(edict_t *pEnt);
 extern inline const bool IsAlive(edict_t *pEnt);
 
-extern inline const bool ignoreBots();
+extern inline const bool canIgnoreBots();
 
 extern inline const bool isModuleActive();
 
@@ -203,6 +201,10 @@ extern void MakeHookSpawn_Player(void);
 extern void MakeHookSpawn_CSBot(edict_t *pEdict);
 
 extern enginefuncs_t *g_pengfuncsTable;
+
+extern CRITICAL_SECTION *log_cs;
+extern void MF_SyncLog(const char *fmt, ...);
+extern void MF_SyncLogError(AMX *amx, int err, const char *fmt, ...);
 
 #endif // RANK_H
 

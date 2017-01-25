@@ -14,6 +14,7 @@
     <ClCompile Include="amxxmodule.cpp" />
     <ClCompile Include="CMisc.cpp" />
     <ClCompile Include="CRank.cpp" />
+    <ClCompile Include="CUtils.cpp" />
     <ClCompile Include="meta_api.cpp" />
     <ClCompile Include="natives.cpp" />
     <ClCompile Include="usermsg.cpp" />
@@ -73,20 +74,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Full</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(METAMOD);C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public\rehlds;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public\steam;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\common;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\engine;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\dlls;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\pm_shared;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\rehlds;C:\Users\Souvik Das\Source\Repos\amxmodx2\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <AdditionalIncludeDirectories>$(METAMOD)\metamod;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public\rehlds;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public\steam;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\common;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\engine;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\dlls;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\pm_shared;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\rehlds;C:\Users\Souvik Das\Source\Repos\amxmodx\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;csx_EXPORTS;JIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <BrowseInformation>true</BrowseInformation>
-      <SDLCheck>true</SDLCheck>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -96,8 +94,8 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(METAMOD);C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public\rehlds;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public\steam;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\common;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\engine;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\dlls;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\pm_shared;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\rehlds;C:\Users\Souvik Das\Source\Repos\amxmodx2\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;csx_EXPORTS;JIT;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(METAMOD)\metamod;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public\rehlds;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\public\steam;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\common;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\engine;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\dlls;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\pm_shared;C:\Users\Souvik Das\Source\Repos\rehlds\rehlds\rehlds;C:\Users\Souvik Das\Source\Repos\amxmodx\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;csx_EXPORTS;JIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <BrowseInformation>true</BrowseInformation>

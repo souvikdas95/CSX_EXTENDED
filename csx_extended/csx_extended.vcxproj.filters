@@ -36,6 +36,9 @@
     <ClCompile Include="vSpawn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CMisc.h">

@@ -16,7 +16,7 @@
 
 // Module info
 #define MODULE_NAME "CSX Extended"
-#define MODULE_VERSION "2.0.2.0"
+#define MODULE_VERSION "2.0.3.0"
 #define MODULE_AUTHOR "Souvik Das"
 #define MODULE_URL "forums.alliedmods.net/showthread.php?t=236021"
 #define MODULE_LOGTAG "CSX"
@@ -47,26 +47,26 @@
 // Uncomment this if you are using MSVC8 or greater and want to fix some of the compatibility issues yourself 
 // #define NO_MSVC8_AUTO_COMPAT
 
-/** 
+/**
  * AMXX Init functions
  * Also consider using FN_META_*
  */
 
-/** AMXX query */
-//#define FN_AMXX_QUERY OnAmxxQuery
+ /** AMXX query */
+ //#define FN_AMXX_QUERY OnAmxxQuery
 
-/** AMXX Check Game - module API is NOT available here.
- * Return AMXX_GAME_OK if this module can load on the game, AMXX_GAME_BAD if it cannot.
- * syntax: int AmxxCheckGame(const char *game)
- */
+ /** AMXX Check Game - module API is NOT available here.
+  * Return AMXX_GAME_OK if this module can load on the game, AMXX_GAME_BAD if it cannot.
+  * syntax: int AmxxCheckGame(const char *game)
+  */
 #define FN_AMXX_CHECKGAME AmxxCheckGame
 
-/** AMXX attach
- * Do native functions init here (MF_AddNatives)
- */
+  /** AMXX attach
+   * Do native functions init here (MF_AddNatives)
+   */
 #define FN_AMXX_ATTACH OnAmxxAttach
 
-/** AMXX Detach (unload) */
+   /** AMXX Detach (unload) */
 #define FN_AMXX_DETACH OnAmxxDetach
 
 /** All plugins loaded
@@ -74,15 +74,15 @@
  */
 #define FN_AMXX_PLUGINSLOADED OnPluginsLoaded
 
-/** All plugins are about to be unloaded */
-//#define FN_AMXX_PLUGINSUNLOADING OnPluginsUnloading
+ /** All plugins are about to be unloaded */
+ //#define FN_AMXX_PLUGINSUNLOADING OnPluginsUnloading
 
-/** All plugins are now unloaded */
-//#define FN_AMXX_PLUGINSUNLOADED OnPluginsUnloaded
+ /** All plugins are now unloaded */
+ //#define FN_AMXX_PLUGINSUNLOADED OnPluginsUnloaded
 
 
-/**** METAMOD ****/
-// If your module doesn't use metamod, you may close the file now :)
+ /**** METAMOD ****/
+ // If your module doesn't use metamod, you may close the file now :)
 #ifdef USE_METAMOD
 // ----
 // Hook Functions
@@ -117,7 +117,7 @@
 // #define FN_ResetGlobalState			ResetGlobalState			/* pfnResetGlobalState() */
 // #define FN_ClientConnect				ClientConnect				/* pfnClientConnect()			(wd) Client has connected */
 #define FN_ClientDisconnect				ClientDisconnect			/* pfnClientDisconnect()		(wd) Player has left the game */
-// #define FN_ClientKill				ClientKill					/* pfnClientKill()				(wd) Player has typed "kill" */
+#define FN_ClientKill					ClientKill					/* pfnClientKill()				(wd) Player has typed "kill" */
 // #define FN_ClientPutInServer			ClientPutInServer			/* pfnClientPutInServer()		(wd) Client is entering the game */
 // #define FN_ClientCommand				ClientCommand				/* pfnClientCommand()			(wd) Player has sent a command (typed or from a bind) */
 // #define FN_ClientUserInfoChanged		ClientUserInfoChanged		/* pfnClientUserInfoChanged()	(wd) Client has updated their setinfo structure */

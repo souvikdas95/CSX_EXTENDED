@@ -19,7 +19,7 @@
 void Grenades::put(edict_t* grenade, float time, uint8_t type, CPlayer* player)
 {
 	Obj* a = new Obj;
-	if (a == NULL)
+	if(a == nullptr)
 		return;
 	a->player = player;
 	a->grenade = grenade;
@@ -27,7 +27,7 @@ void Grenades::put(edict_t* grenade, float time, uint8_t type, CPlayer* player)
 	a->type = type;
 	a->prev = 0;
 	a->next = head;
-	if (head != NULL)
+	if(head != nullptr)
 		head->prev = a;
 	head = a;
 }
@@ -36,11 +36,11 @@ bool Grenades::find(edict_t* enemy, CPlayer** p, uint8_t* type)
 {
 	bool found = false;
 	Obj* a = head;
-	while (a != NULL)
+	while(a != nullptr)
 	{
-		if (a->time > gpGlobals->time && !found)
+		if(a->time > gpGlobals->time && !found)
 		{
-			if (a->grenade == enemy)
+			if(a->grenade == enemy)
 			{
 				found = true;
 				*p = a->player;
@@ -50,11 +50,11 @@ bool Grenades::find(edict_t* enemy, CPlayer** p, uint8_t* type)
 		else
 		{
 			Obj* next = a->next;
-			if (a->prev != NULL)
+			if(a->prev != nullptr)
 				a->prev->next = next;
 			else
 				head = next;
-			if (next != NULL)
+			if(next != nullptr)
 				next->prev = a->prev;
 			delete a;
 			a = next;
@@ -68,7 +68,7 @@ bool Grenades::find(edict_t* enemy, CPlayer** p, uint8_t* type)
 
 void Grenades::clear()
 {
-	while (head)
+	while(head)
 	{
 		Obj* a = head->next;
 		delete head;
@@ -81,37 +81,37 @@ void Grenades::clear()
 // *****************************************************
 void CPlayer::Disconnect()
 {
+	// Set In-Game False
+	ingame = false;
+	
 	// ignore if he is bot and bots rank is disabled or module is paused
-	if ((ignoreBots() && bot) || !isModuleActive())
+	if((canIgnoreBots() && bot) || !isModuleActive())
 		return;
 
-	if (rank != NULL) // Just a sanity check, FL_FAKECLIENT is notoriously unreliable.
+	// Just a sanity check
+	if(rank != nullptr)
+	{
 		rank->updatePosition(&life);
-
-	rank = NULL;	// Clear RANK IDENTITY of Disconnected Player
+		rank = nullptr;
+	}
 }
 
 void CPlayer::PutInServer()
 {
-	// Making cVar Values Constant on 1st load ( On starting HLDS )
-	// ServerActivate_Post() doesn't take place on 1st load
-	static bool first_time = true;
-	if (first_time)
-	{
-		first_time = false;
-		cvar_rankbots = (int)csstats_rankbots->value ? true : false;
-		cvar_rank = (uint8_t)csstats_rank->value;
-	}
-
-	if (ignoreBots() && bot)
+	// In-Game?
+	ingame = true;
+	
+	// Ignore Bots?
+	if(canIgnoreBots() && bot)
 		return;
 
-	restartStats();	// Clear Player Stats
+	// Clear Player Stats
+	restartStats();
 
 	// Nominate Unique Identification for Player
 	const char* name = STRING(pEdict->v.netname);
-	const char* unique = NULL;
-	switch (cvar_rank)
+	const char* unique = nullptr;
+	switch((uint8_t)(csstats_rank->value))
 	{
 		case 0:
 		{
@@ -119,14 +119,14 @@ void CPlayer::PutInServer()
 		} break;
 		case 1:
 		{
-			if (authid == NULL || !IsValidAuth(authid))
+			if(authid == nullptr || !IsValidAuth(authid))
 				unique = name;
 			else
 				unique = authid;
 		} break;
 		case 2:
 		{
-			if (ip == NULL)
+			if(ip == nullptr)
 				unique = name;
 			else
 				unique = ip;
@@ -139,42 +139,50 @@ void CPlayer::PutInServer()
 
 	// Allocate Player Stats
 	rank = g_rank.findEntryInRank(unique);
-	if (rank == NULL)
+	if(rank == nullptr)
 	{
 		rank = g_rank.newEntryInRank(unique, name);
-		if (rank != NULL)
+		if(rank != nullptr)
 			rank->updatePosition();
 		else
 		{
-			MF_Log("PutInServer: Unable to load Stats of player \"%s\" on Server", name);
+			MF_SyncLog("PutInServer: Unable to load Stats of player \"%s\" on Server", name);
+			return;
 		}
 	}
-	else if (unique != name && strcmp(rank->getName(), name) != 0)
+	else if(unique != name && strcmp(rank->getName(), name) != 0)
 		rank->setName(name);
 }
 
 void CPlayer::Connect(const char* address)
 {
-	if (rank != NULL)
-		Disconnect();
-	
+	// Just a sanity check
+	if(rank != nullptr)
+	{
+		rank->updatePosition(&life);
+		rank = nullptr;
+	}
+
+	// Cache BOT parameter
 	bot = IsBot(pEdict);
 
+	// Cache AuthID
 	authid = strdup(GETPLAYERAUTHID(pEdict));
 
+	// Cache IP
 	ip = strdup(address);
 	uint8_t len = (uint8_t)strlen(ip);
-	while (--len)
-		if (ip[len] == ':')
+	while(--len)
+		if(ip[len] == ':')
 		{
-			ip[len] = NULL;
+			ip[len] = '\0';
 			break;
 		}
 }
 
 void CPlayer::restartStats(bool all)
 {
-	if (all)
+	if(all)
 		memset(weapons, 0, sizeof(weapons));
 	memset(weaponsRnd, 0, sizeof(weaponsRnd));   //DEC-Weapon (Round) stats
 	memset(attackers, 0, sizeof(attackers));
@@ -187,15 +195,15 @@ void CPlayer::Init(uint8_t pi, edict_t* pe)
 	pEdict = pe;
 	index = pi;
 	current = 0;
-	rank = 0;
+	rank = nullptr;
 }
 
 void CPlayer::saveKill(CPlayer* pVictim, uint8_t wweapon, uint8_t hhs, uint8_t ttk)
 {
-	if (!isModuleActive() || (ignoreBots() && (bot || IsBot(pVictim->pEdict))))
+	if(!isModuleActive() || (canIgnoreBots() && (bot || IsBot(pVictim->pEdict))))
 		return;
 
-	if (pVictim->index == index) // killed self
+	if(pVictim->index == index) // killed self
 	{
 		pVictim->weapons[0].deaths++;
 		pVictim->life.deaths++;
@@ -246,10 +254,10 @@ void CPlayer::saveKill(CPlayer* pVictim, uint8_t wweapon, uint8_t hhs, uint8_t t
 
 void CPlayer::saveHit(CPlayer* pVictim, uint8_t wweapon, int32_t ddamage, uint8_t bbody)
 {
-	if (!isModuleActive() || (ignoreBots() && (bot || IsBot(pVictim->pEdict))))
+	if(!isModuleActive() || (canIgnoreBots() && (bot || IsBot(pVictim->pEdict))))
 		return;
 
-	if (index == pVictim->index)
+	if(index == pVictim->index)
 		return;
 
 	pVictim->attackers[index].hits++;
@@ -289,7 +297,7 @@ void CPlayer::saveHit(CPlayer* pVictim, uint8_t wweapon, int32_t ddamage, uint8_
 
 void CPlayer::saveShot(uint8_t weapon)
 {
-	if (!isModuleActive() || (ignoreBots() && bot))
+	if(!isModuleActive() || (canIgnoreBots() && bot))
 		return;
 
 	victims[0].shots++;
@@ -302,39 +310,39 @@ void CPlayer::saveShot(uint8_t weapon)
 
 void CPlayer::saveBPlant()
 {
-	if (!isModuleActive())
+	if(!isModuleActive())
 		return;
 	life.bPlants++;
 }
 
 void CPlayer::saveBExplode()
 {
-	if (!isModuleActive())
+	if(!isModuleActive())
 		return;
 	life.bExplosions++;
 }
 
 void CPlayer::saveBDefusing()
 {
-	if (!isModuleActive())
+	if(!isModuleActive())
 		return;
 	life.bDefusions++;
 }
 
 void CPlayer::saveBDefused()
 {
-	if (!isModuleActive())
+	if(!isModuleActive())
 		return;
 	life.bDefused++;
 }
 
 void CPlayer::setScore(short int a, short int b) // This will update the Score Properly
 {
-	if (a >= 0)
+	if(a >= 0)
 		pEdict->v.frags = a;
-	if (b >= 0)
+	if(b >= 0)
 		*((int *)pEdict->pvPrivateData + OFFSET_CSDEATHS) = b;
-	MESSAGE_BEGIN(MSG_BROADCAST, GET_USER_MSG_ID(PLID, "ScoreInfo", NULL));
+	MESSAGE_BEGIN(MSG_BROADCAST, GET_USER_MSG_ID(PLID, "ScoreInfo", nullptr));
 	WRITE_BYTE(index);
 	WRITE_SHORT((short int)pEdict->v.frags);
 	WRITE_SHORT(*((int *)pEdict->pvPrivateData + OFFSET_CSDEATHS));
@@ -349,7 +357,7 @@ void CPlayer::setScore(short int a, short int b) // This will update the Score P
 inline const bool IsBot(edict_t *pEnt)
 {
 	const char* auth = GETPLAYERAUTHID(pEnt);
-	return ((auth != NULL && !strcmp(auth, "BOT")) || (pEnt->v.flags & FL_FAKECLIENT));
+	return ((auth != nullptr && !strcmp(auth, "BOT")) || (pEnt->v.flags & FL_FAKECLIENT));
 }
 
 inline const bool IsAlive(edict_t *pEnt)
@@ -357,9 +365,9 @@ inline const bool IsAlive(edict_t *pEnt)
 	return ((pEnt->v.deadflag == DEAD_NO) && (pEnt->v.health > 0));
 }
 
-inline const bool ignoreBots()
+inline const bool canIgnoreBots()
 {
-	return cvar_rankbots ? false : true;
+	return ((uint8_t)csstats_rankbots->value) ? false : true;
 }
 
 inline const bool isModuleActive()

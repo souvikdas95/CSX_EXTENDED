@@ -39,7 +39,7 @@ void Stats::commit(Stats* a)
 	bPlants += a->bPlants;
 	bExplosions += a->bExplosions;
 
-	for (uint8_t i = 1; i < 8; ++i)
+	for(uint8_t i = 1; i < 8; ++i)
 		bodyHits[i] += a->bodyHits[i];
 }
 
@@ -75,27 +75,25 @@ RankSystem::RankSystem()
 	head = NULL;
 	tail = NULL;
 	calc.code = NULL;
-	if (HANDLE_MUTEX == FALSE)
+	if(HANDLE_MUTEX == FALSE)
 	{
 		delete MUTEX;
 		MUTEX = new CRITICAL_SECTION;
 		HANDLE_MUTEX = InitializeCriticalSectionAndSpinCount(MUTEX, 0x00000400);
-		if (HANDLE_MUTEX == FALSE)
-		{
-			MF_Log("RankSystem: Couldn't create critical section");
-		}
+		if(HANDLE_MUTEX == FALSE)
+			MF_SyncLog("RankSystem: Couldn't create critical section");
 	}
 }
 
 // Identity Initialization Routines
 void RankSystem::RankStats::setName(const char* nn)
 {
-	if (nn == NULL)
+	if(nn == NULL)
 		return;
 	delete[] name;
 	namelen = (int16_t)(strlen(nn) + 1);
 	name = new char[namelen];
-	if (name != NULL)
+	if(name != NULL)
 		strncpy(name, nn, namelen);
 	else
 		namelen = 0;
@@ -103,12 +101,12 @@ void RankSystem::RankStats::setName(const char* nn)
 
 void RankSystem::RankStats::setUnique(const char* uu)
 {
-	if (uu == NULL)
+	if(uu == NULL)
 		return;
 	delete[] unique;
 	uniquelen = (int16_t)(strlen(uu) + 1);
 	unique = new char[uniquelen];
-	if (unique != NULL)
+	if(unique != NULL)
 		strncpy(unique, uu, uniquelen);
 	else
 		uniquelen = 0;
@@ -117,14 +115,14 @@ void RankSystem::RankStats::setUnique(const char* uu)
 // RankStats Traversal Utility Routines
 void RankSystem::put_before(RankStats* a, RankStats* ptr)	// ptr is fixed
 {
-	if (a == NULL || ptr == NULL)	// Handle Invalid RankStats
+	if(a == NULL || ptr == NULL)	// Handle Invalid RankStats
 		return;
 
 	a->prev = ptr->prev;
 	a->next = ptr;
 	ptr->prev = a;
 
-	if (a->prev == NULL)
+	if(a->prev == NULL)
 		head = a;
 	else
 		a->prev->next = a;
@@ -132,14 +130,14 @@ void RankSystem::put_before(RankStats* a, RankStats* ptr)	// ptr is fixed
 
 void  RankSystem::put_after(RankStats* a, RankStats* ptr)	// ptr is fixed
 {
-	if (a == NULL || ptr == NULL)	// Handle Invalid RankStats
+	if(a == NULL || ptr == NULL)	// Handle Invalid RankStats
 		return;
 
 	a->next = ptr->next;
 	a->prev = ptr;
 	ptr->next = a;
 
-	if (a->next == NULL)
+	if(a->next == NULL)
 		tail = a;
 	else
 		a->next->prev = a;
@@ -147,15 +145,15 @@ void  RankSystem::put_after(RankStats* a, RankStats* ptr)	// ptr is fixed
 
 void RankSystem::unlink_ptr(RankStats* ptr)
 {
-	if (ptr == NULL)	// Handle Invalid RankStats
+	if(ptr == NULL)	// Handle Invalid RankStats
 		return;
 
-	if (ptr->prev != NULL)
+	if(ptr->prev != NULL)
 		ptr->prev->next = ptr->next;
 	else
 		head = ptr->next;
 
-	if (ptr->next != NULL)
+	if(ptr->next != NULL)
 		ptr->next->prev = ptr->prev;
 	else
 		tail = ptr->prev;
@@ -173,8 +171,8 @@ void RankSystem::clear()
 {
 	// Enter Critical Section
 	EnterCriticalSection(MUTEX);
-	
-	while (head != NULL)
+
+	while(head != NULL)
 	{
 		tail = head->next;
 		delete head;
@@ -189,42 +187,42 @@ void RankSystem::clear()
 DWORD RankSystem::updatePos_thread(LPVOID lpParam)
 {
 	RankStats *arg = ((RankStats*)lpParam);
-	if (arg == NULL || arg->parent == NULL) // Verify Pointer to RankStats
+	if(arg == NULL || arg->parent == NULL) // Verify Pointer to RankStats
 	{
-		MF_Log("updatePos_thread: Invalid pointer parameter to RankStats");
+		MF_SyncLog("updatePos_thread: Invalid pointer parameter to RankStats");
 		return 0;
 	}
 	arg->parent->updatePos_exec(arg);
-#ifdef DEBUG
-	MF_Log("updatePos_thread: Exiting Thread #%d", GetCurrentThreadId());
+#ifdef _DEBUG
+	MF_SyncLog("updatePos_thread: Exiting Thread #%d", GetCurrentThreadId());
 #endif
 	return 0;
 }
 
 void RankSystem::updatePos_init(RankStats* rr, Stats* s, bool sync)
 {
-	if (rr == NULL)	// Verify Pointer to RankStats
+	if(rr == NULL)	// Verify Pointer to RankStats
 		return;
 
-	if (s != NULL)	// NULL Stats Update (Only for Synchronization)
+	if(s != NULL)	// NULL Stats Update (Only for Synchronization)
 		rr->addStats(s);
 
-	if (sync == true)
+	if(sync == true)
 		updatePos_exec(rr);
 	else
 	{
 		// Prevent Waiting on MAIN Thread
 		HANDLE h_temp = CreateThread(NULL, 0, updatePos_thread, rr, CREATE_SUSPENDED, NULL);
-		if (h_temp == NULL)
+		if(h_temp == NULL)
 		{
-			MF_Log("updatePos_init: Couldn't create thread for updating Ranks");
+			MF_SyncLog("updatePos_init: Couldn't create thread for updating Ranks");
 		}
 		else
 		{
-#ifdef DEBUG
-			MF_Log("updatePos_init: Creating Thread #%d", GetThreadId(h_temp));
+#ifdef _DEBUG
+			MF_SyncLog("updatePos_init: Creating Thread #%d", GetThreadId(h_temp));
 #endif
-			SetThreadPriority(h_temp, THREAD_PRIORITY_BELOW_NORMAL);
+			SetThreadPriority(h_temp, THREAD_PRIORITY_LOWEST);
 			ResumeThread(h_temp);
 			CloseHandle(h_temp);
 		}
@@ -239,7 +237,7 @@ void RankSystem::updatePos_exec(RankStats* rr)
 	// Verify Pointer to RankStats
 	if(rr == NULL)
 	{
-		MF_Log("updatePos_exec: Pointer to RankStats has Expired!");
+		MF_SyncLog("updatePos_exec: Pointer to RankStats has Expired!");
 
 		// Leave Critical Section
 		LeaveCriticalSection(MUTEX);
@@ -259,16 +257,16 @@ void RankSystem::updatePos_exec(RankStats* rr)
 	calc.physAddr1[8] = rr->bDefused;
 	calc.physAddr1[9] = rr->bPlants;
 	calc.physAddr1[10] = rr->bExplosions;
-	for (i = 1; i < 8; ++i)
+	for(i = 1; i < 8; ++i)
 		calc.physAddr2[i] = rr->bodyHits[i];
 
 	// Result Calculation using Calc Buffer and Calc Function "get_score"
 	cell result = 0;
 	MF_AmxPush(&calc.amx, calc.amxAddr2);
 	MF_AmxPush(&calc.amx, calc.amxAddr1);
-	if ((i = (uint8_t)MF_AmxExec(&calc.amx, &result, calc.func)) != AMX_ERR_NONE)
+	if((i = (uint8_t)MF_AmxExec(&calc.amx, &result, calc.func)) != AMX_ERR_NONE)
 	{
-		MF_Log("updatePos_exec: Error in function \"get_score\"");
+		MF_SyncLog("updatePos_exec: Error in pawn function \"get_score\"");
 
 		// Leave Critical Section
 		LeaveCriticalSection(MUTEX);
@@ -277,16 +275,16 @@ void RankSystem::updatePos_exec(RankStats* rr)
 
 	rr->score = result;
 	RankStats* itr = rr->prev;
-	while (itr != NULL && rr->score >= itr->score)
+	while(itr != NULL && rr->score >= itr->score)
 	{
 		rr->id--;
 		itr->id++;
 		itr = itr->prev;
 	}
-	if (itr != rr->prev)
+	if(itr != rr->prev)
 	{
 		unlink_ptr(rr);
-		if (itr == NULL)
+		if(itr == NULL)
 			put_before(rr, head);
 		else
 			put_after(rr, itr);	// since current "itr" has greater score
@@ -294,22 +292,22 @@ void RankSystem::updatePos_exec(RankStats* rr)
 	else
 	{
 		itr = rr->next;
-		while (itr != NULL && rr->score < itr->score)
+		while(itr != NULL && rr->score < itr->score)
 		{
 			rr->id++;
 			itr->id--;
 			itr = itr->next;
 		}
-		if (itr != rr->next)
+		if(itr != rr->next)
 		{
 			unlink_ptr(rr);
-			if (itr == NULL)
+			if(itr == NULL)
 				put_after(rr, tail);
 			else
 				put_before(rr, itr);	// since current "itr" has lower (or equal) score
 		}
 	}
-	
+
 	// Leave Critical Section
 	LeaveCriticalSection(MUTEX);
 }
@@ -325,34 +323,34 @@ DWORD RankSystem::saveRank_thread(LPVOID lpParam)
 	RankSystem *arg = ((RankSystem*)lpParam);
 	if(arg == NULL)
 	{
-		MF_Log("saveRank_thread: Invalid pointer parameter to RankSystem");
+		MF_SyncLog("saveRank_thread: Invalid pointer parameter to RankSystem");
 		return 0;
 	}
 	arg->saveRank_exec();
-#ifdef DEBUG
-	MF_Log("saveRank_thread: Exiting Thread #%d", GetCurrentThreadId());
+#ifdef _DEBUG
+	MF_SyncLog("saveRank_thread: Exiting Thread #%d", GetCurrentThreadId());
 #endif
 	return 0;
 }
 
 void RankSystem::saveRank_init()
 {
-	if (h_saveRank != NULL)
+	if(h_saveRank != NULL)
 	{
 		WaitForSingleObject(h_saveRank, INFINITE);
 		CloseHandle(h_saveRank);
 	}
 	h_saveRank = CreateThread(NULL, 0, saveRank_thread, this, CREATE_SUSPENDED, NULL);	// Prevent Waiting on MAIN Thread
-	if (h_saveRank == NULL)
+	if(h_saveRank == NULL)
 	{
-		MF_Log("saveRank_init: Couldn't create thread for saving Ranks");
+		MF_SyncLog("saveRank_init: Couldn't create thread for saving Ranks");
 	}
 	else
 	{
-#ifdef DEBUG
-		MF_Log("saveRank_init: Creating Thread #%d", GetThreadId(h_saveRank));
+#ifdef _DEBUG
+		MF_SyncLog("saveRank_init: Creating Thread #%d", GetThreadId(h_saveRank));
 #endif
-		SetThreadPriority(h_saveRank, THREAD_PRIORITY_BELOW_NORMAL);
+		SetThreadPriority(h_saveRank, THREAD_PRIORITY_LOWEST);
 		ResumeThread(h_saveRank);
 	}
 }
@@ -361,13 +359,13 @@ void RankSystem::saveRank_exec()
 {
 	// Enter Critical Section
 	EnterCriticalSection(MUTEX);
-	
+
 	// Open Stats file for Writing
 	const char* filename = MF_BuildPathname("%s", get_localinfo("csstats"));	// Path to "csstats.dat"
 	FILE* bfp = fopen(filename, "wb");
-	if (bfp == NULL)
+	if(bfp == NULL)
 	{
-		MF_Log("saveRank: Could not load csstats file: \"%s\"", filename);
+		MF_SyncLog("saveRank: Could not load csstats file: \"%s\"", filename);
 
 		// Leave Critical Section
 		LeaveCriticalSection(MUTEX);
@@ -381,7 +379,7 @@ void RankSystem::saveRank_exec()
 
 	// Save
 	RankStats *itr = head;
-	while (itr != NULL)
+	while(itr != NULL)
 	{
 		fwrite(&itr->namelen, sizeof(int16_t), 1, bfp);
 		fwrite(itr->name, sizeof(char), itr->namelen, bfp);
@@ -413,23 +411,23 @@ void RankSystem::saveRank_exec()
 void RankSystem::loadRank()
 {
 	// Wait for saveRank THREAD to Finish (Important)
-	if (h_saveRank != NULL)
+	if(h_saveRank != NULL)
 		WaitForSingleObject(h_saveRank, INFINITE);
 
 	// Open Stats file for Reading
 	const char* filename = MF_BuildPathname("%s", get_localinfo("csstats"));	// Path to csstats file
 	FILE* bfp = fopen(filename, "rb");
-	if (bfp == NULL)
+	if(bfp == NULL)
 	{
-		MF_Log("loadRank: Could not load csstats file: \"%s\"", filename);
+		MF_SyncLog("loadRank: Could not load csstats file: \"%s\"", filename);
 		return;
 	}
 
 	// Get RANK_VERSION (1 Byte)
 	int16_t* buffer = new int16_t;
-	if (fread(buffer, sizeof(int16_t), 1, bfp) != 1 || *buffer != RANK_VERSION)
+	if(fread(buffer, sizeof(int16_t), 1, bfp) != 1 || *buffer != RANK_VERSION)
 	{
-		MF_Log("loadRank: Invalid RANK_VERSION Found!");
+		MF_SyncLog("loadRank: Invalid RANK_VERSION Found!");
 		fclose(bfp);
 		return;
 	}
@@ -442,42 +440,42 @@ void RankSystem::loadRank()
 	g_rank.clear();
 
 	// Load
-	if (fread(buffer, sizeof(int16_t), 1, bfp) != 1)	// Pre Check
+	if(fread(buffer, sizeof(int16_t), 1, bfp) != 1)	// Pre Check
 	{
 		fclose(bfp);
 		return;
 	}
-	while (buffer != NULL && *buffer && !feof(bfp))
+	while(buffer != NULL && *buffer && !feof(bfp))
 	{
 		name = new char[*buffer];
-		if (fread(name, sizeof(char), *buffer, bfp) != *buffer)	break;
-		if (fread(buffer, sizeof(int16_t), 1, bfp) != 1)	break;	// unique length
+		if(fread(name, sizeof(char), *buffer, bfp) != *buffer)	break;
+		if(fread(buffer, sizeof(int16_t), 1, bfp) != 1)	break;	// unique length
 		unique = new char[*buffer];
-		if (fread(unique, sizeof(char), *buffer, bfp) != *buffer)	break;
-		if (fread(&d.tks, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.damage, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.deaths, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.kills, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.shots, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.hits, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.hs, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.bDefusions, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.bDefused, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.bPlants, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(&d.bExplosions, sizeof(int32_t), 1, bfp) != 1)	break;
-		if (fread(d.bodyHits, sizeof(d.bodyHits), 1, bfp) != 1)	break;
-		if (fread(buffer, sizeof(int16_t), 1, bfp) != 1)	break;	// name length or NULL Terminator
+		if(fread(unique, sizeof(char), *buffer, bfp) != *buffer)	break;
+		if(fread(&d.tks, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.damage, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.deaths, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.kills, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.shots, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.hits, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.hs, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.bDefusions, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.bDefused, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.bPlants, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(&d.bExplosions, sizeof(int32_t), 1, bfp) != 1)	break;
+		if(fread(d.bodyHits, sizeof(d.bodyHits), 1, bfp) != 1)	break;
+		if(fread(buffer, sizeof(int16_t), 1, bfp) != 1)	break;	// name length or NULL Terminator
 
 		// Precise Check: Duplicate Entries ( Defalult: Discard Lower Rank Entries )
 		RankSystem::RankStats* temp = findEntryInRank(unique);
-		if (temp == NULL)
+		if(temp == NULL)
 		{
 			temp = newEntryInRank(unique, name);
-			if (temp != NULL)
+			if(temp != NULL)
 				temp->updatePosition(&d, true);
 			else
 			{
-				MF_Log("loadRank: Unable to load any more Stats on Server");
+				MF_SyncLog("loadRank: Unable to load any more Stats on Server");
 				fclose(bfp);
 				return;
 			}
@@ -494,9 +492,9 @@ void RankSystem::deletePos(RankStats* rr)
 {
 	// Enter Critical Section
 	EnterCriticalSection(MUTEX);
-	
+
 	RankStats* aa = rr->next;
-	while (aa)	// Shift all ranks worse than "rr" 1 step for good
+	while(aa)	// Shift all ranks worse than "rr" 1 step for good
 	{
 		aa->id--;
 		aa = aa->next;
@@ -515,19 +513,19 @@ RankSystem::RankStats* RankSystem::newEntryInRank(const char* unique, const char
 {
 	// Enter Critical Section
 	EnterCriticalSection(MUTEX);
-	
+
 	// Create New RankStats Entry
 	RankStats* a = new RankStats(unique, name, this);
-	if (a == NULL)
+	if(a == NULL)
 	{
-		MF_Log("newEntryInRank: Could not allocate new \"RankStats\" entry");
+		MF_SyncLog("newEntryInRank: Could not allocate new \"RankStats\" entry");
 		// Leave Critical Section
 		LeaveCriticalSection(MUTEX);
 
 		return NULL;
 	}
 
-	if (tail != NULL)
+	if(tail != NULL)
 		put_after(a, tail);
 	else
 		head = tail = a;	// First Entry
@@ -542,11 +540,11 @@ RankSystem::RankStats* RankSystem::findEntryInRank(const char* unique)
 {
 	// Enter Critical Section
 	EnterCriticalSection(MUTEX);
-	
+
 	RankStats* itr = head;
-	while (itr != NULL)
+	while(itr != NULL)
 	{
-		if (!strcmp(itr->getUnique(), unique))
+		if(!strcmp(itr->getUnique(), unique))
 			break;
 		itr = itr->next;
 	}
@@ -563,7 +561,7 @@ void RankSystem::iterator::getEntryByRank(uint16_t rank)	// Only for Iteration
 	EnterCriticalSection(MUTEX);
 
 	RankSystem::iterator a = g_rank.itr_head();
-	while (--rank && &(*a) != NULL)
+	while(--rank && &(*a) != NULL)
 		++a;
 	ptr = a.ptr;
 
@@ -575,12 +573,12 @@ void RankSystem::iterator::getEntryByRank(uint16_t rank)	// Only for Iteration
 bool RankSystem::loadCalc(const char* filename)
 {
 	static char error[128];
-	if ((MF_LoadAmxScript(&calc.amx, &calc.code, filename, error, 0) != AMX_ERR_NONE)
+	if((MF_LoadAmxScript(&calc.amx, &calc.code, filename, error, 0) != AMX_ERR_NONE)
 		|| (MF_AmxAllot(&calc.amx, 11, &calc.amxAddr1, &calc.physAddr1) != AMX_ERR_NONE)
 		|| (MF_AmxAllot(&calc.amx, 8, &calc.amxAddr2, &calc.physAddr2) != AMX_ERR_NONE)
 		|| (MF_AmxFindPublic(&calc.amx, "get_score", &calc.func) != AMX_ERR_NONE))
 	{
-		MF_LogError(&calc.amx, AMX_ERR_NATIVE, "loadCalc: Couldn't load function \"get_score\" from \"%s\"", filename);
+		MF_SyncLogError(&calc.amx, AMX_ERR_NATIVE, "loadCalc: Couldn't load function \"get_score\" from \"%s\"", filename);
 		MF_UnloadAmxScript(&calc.amx, &calc.code);
 		return false;
 	}

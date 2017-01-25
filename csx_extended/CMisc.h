@@ -45,6 +45,7 @@ struct CPlayer
 	uint8_t aiming;	// Body Part aimed at by weapon (Except CSW_KNIFE)
 	uint8_t current;	// Current Weapon
 	bool bot;	// Player Bot?
+	bool ingame;	// Player In-Game?
 
 	RankSystem::RankStats* rank;	// RANKING IDENTITY of Player
 
@@ -52,10 +53,11 @@ struct CPlayer
 
 	CPlayer()
 	{
-		ip = NULL;
-		authid = NULL;
+		ip = nullptr;
+		authid = nullptr;
 		bot = false;
-		rank = NULL;
+		ingame = false;
+		rank = nullptr;
 	};
 
 	struct PlayerWeapon : Stats
@@ -105,9 +107,15 @@ class Grenades
 		Obj* prev;
 	} *head;
 
-public:
-	Grenades() { head = NULL; }
-	~Grenades() { clear(); }
+	public:
+	Grenades()
+	{
+		head = nullptr;
+	}
+	~Grenades()
+	{
+		clear();
+	}
 	void put(edict_t* grenade, float time, uint8_t type, CPlayer* player);
 	bool find(edict_t* enemy, CPlayer** p, uint8_t* type);
 	void clear();

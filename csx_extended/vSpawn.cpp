@@ -1,21 +1,21 @@
 #include "amxxmodule.h"
 #include "CHeader.h"
 
-void *pOrigFuncSpawn_Player = NULL;
-void *pOrigFuncSpawn_CSBot = NULL;
+void *pOrigFuncSpawn_Player = nullptr;
+void *pOrigFuncSpawn_CSBot = nullptr;
 
 // Spawn Action
 void OnSpawn(int iEnt)
 {
 	CPlayer *pPlayer = GET_PLAYER_POINTER_I(iEnt);
-
-	if (!isModuleActive()	\
-		|| pPlayer == NULL	\
-		|| pPlayer->rank == NULL)
+	if(!isModuleActive()	\
+		|| pPlayer == nullptr	/*Sanity check*/\
+		|| pPlayer->ingame == false	/*Only Acknowledge Connected Clients/Bots*/
+		|| pPlayer->rank == nullptr)	/*Sanity check*/
 		return;
 
-#ifdef DEBUG
-	MF_Log("OnSpawn: Updating Stats of Player '%s'", STRING(pPlayer->pEdict->v.netname));
+#ifdef _DEBUG
+	MF_SyncLog("OnSpawn: Updating Stats of Player '%s'", STRING(pPlayer->pEdict->v.netname));
 #endif
 
 	pPlayer->rank->updatePosition(&pPlayer->life);
@@ -49,7 +49,7 @@ void MakeHookSpawn_Player()
 
 	CALL_GAME_ENTITY(PLID, "player", &pEdict->v);
 
-	if (pEdict->pvPrivateData == NULL)
+	if(pEdict->pvPrivateData == nullptr)
 	{
 		REMOVE_ENTITY(pEdict);
 		return;
@@ -63,7 +63,7 @@ void MakeHookSpawn_Player()
 
 	REMOVE_ENTITY(pEdict);
 
-	if (vtable == NULL)
+	if(vtable == nullptr)
 		return;
 
 	int **ivtable = (int **)vtable;
@@ -109,7 +109,7 @@ void MakeHookSpawn_CSBot(edict_t *pEdict)
 	void **vtable = *((void***)((char*)pEdict->pvPrivateData));
 #endif
 
-	if (vtable == NULL)
+	if(vtable == nullptr)
 		return;
 
 	int **ivtable = (int **)vtable;
